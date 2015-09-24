@@ -1,4 +1,4 @@
-package com.sleepbot.datetimepicker.time;
+package com.fourmob.datetimepicker.time;
 /*
  * Copyright (C) 2013 The Android Open Source Project
  *
@@ -16,10 +16,9 @@ package com.sleepbot.datetimepicker.time;
  */
 
 import android.app.ActionBar.LayoutParams;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Build;
-import android.support.v4.app.DialogFragment;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.method.TransformationMethod;
 import android.util.Log;
@@ -36,15 +35,17 @@ import android.widget.TextView;
 
 import com.fourmob.datetimepicker.R;
 import com.fourmob.datetimepicker.Utils;
+import com.fourmob.datetimepicker.base.AbstractDialogFragment;
 
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
 
 /**
  * Dialog to set a time.
  */
-public class TimePickerDialog extends DialogFragment implements RadialPickerLayout.OnValueSelectedListener {
+public class TimePickerDialog extends AbstractDialogFragment<Calendar> implements RadialPickerLayout.OnValueSelectedListener {
     private static final String TAG = "TimePickerDialog";
 
     private static final String KEY_HOUR_OF_DAY = "hour_of_day";
@@ -66,8 +67,6 @@ public class TimePickerDialog extends DialogFragment implements RadialPickerLayo
 
     // Delay before starting the pulse animation, in ms.
     private static final int PULSE_ANIMATOR_DELAY = 300;
-
-    private OnTimeSetListener mCallback;
 
     private TextView mDoneButton;
     private TextView mHourView;
@@ -108,49 +107,21 @@ public class TimePickerDialog extends DialogFragment implements RadialPickerLayo
     private boolean mVibrate = true;
     private boolean mCloseOnSingleTapMinute;
 
-    /**
-     * The callback interface used to indicate the user is done filling in
-     * the time (they clicked on the 'Set' button).
-     */
-    public interface OnTimeSetListener {
 
-        /**
-         * @param view      The view associated with this listener.
-         * @param hourOfDay The hour that was set.
-         * @param minute    The minute that was set.
-         */
-        void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute);
+    public static Bundle createArguments(int hourOfDay, int minute, boolean is24HourMode, boolean vibrate) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(KEY_HOUR_OF_DAY, hourOfDay);
+        bundle.putInt(KEY_MINUTE, minute);
+        bundle.putBoolean(KEY_IS_24_HOUR_VIEW, is24HourMode);
+        bundle.putBoolean(KEY_VIBRATE, vibrate);
+        return bundle;
     }
 
-    public TimePickerDialog() {
-        // Empty constructor required for dialog fragment. DO NOT REMOVE
-    }
-
-    public static TimePickerDialog newInstance(OnTimeSetListener callback,
-                                               int hourOfDay, int minute, boolean is24HourMode) {
-        return newInstance(callback, hourOfDay, minute, is24HourMode, true);
-    }
-
-    public static TimePickerDialog newInstance(OnTimeSetListener callback,
-                                               int hourOfDay, int minute, boolean is24HourMode, boolean vibrate) {
-        TimePickerDialog ret = new TimePickerDialog();
-        ret.initialize(callback, hourOfDay, minute, is24HourMode, vibrate);
-        return ret;
-    }
-
-    public void initialize(OnTimeSetListener callback,
-                           int hourOfDay, int minute, boolean is24HourMode, boolean vibrate) {
-        mCallback = callback;
-
-        mInitialHourOfDay = hourOfDay;
-        mInitialMinute = minute;
-        mIs24HourMode = is24HourMode;
-        mInKbMode = false;
-        mVibrate = vibrate;
-    }
-
-    public void setOnTimeSetListener(OnTimeSetListener callback) {
-        mCallback = callback;
+    private void returnResult() {
+        final Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, mTimePicker.getHours());
+        calendar.set(Calendar.MINUTE, mTimePicker.getMinutes());
+        returnResult(calendar);
     }
 
     public void setStartTime(int hourOfDay, int minute) {
@@ -175,12 +146,19 @@ public class TimePickerDialog extends DialogFragment implements RadialPickerLayo
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_HOUR_OF_DAY)
                 && savedInstanceState.containsKey(KEY_MINUTE)
                 && savedInstanceState.containsKey(KEY_IS_24_HOUR_VIEW)) {
-            mInitialHourOfDay = savedInstanceState.getInt(KEY_HOUR_OF_DAY);
-            mInitialMinute = savedInstanceState.getInt(KEY_MINUTE);
-            mIs24HourMode = savedInstanceState.getBoolean(KEY_IS_24_HOUR_VIEW);
-            mInKbMode = savedInstanceState.getBoolean(KEY_IN_KB_MODE);
-            mVibrate = savedInstanceState.getBoolean(KEY_VIBRATE);
+            initializeFromBundle(savedInstanceState);
+        } else {
+            initializeFromBundle(getArguments() != null ? getArguments() : new Bundle());
         }
+    }
+
+    private void initializeFromBundle(Bundle bundle) {
+        final Calendar calendar = Calendar.getInstance();
+        mInitialHourOfDay = bundle.getInt(KEY_HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY));
+        mInitialMinute = bundle.getInt(KEY_MINUTE, calendar.get(Calendar.MINUTE));
+        mIs24HourMode = bundle.getBoolean(KEY_IS_24_HOUR_VIEW, true);
+        mInKbMode = bundle.getBoolean(KEY_IN_KB_MODE, false);
+        mVibrate = bundle.getBoolean(KEY_VIBRATE, true);
     }
 
     @Override
@@ -321,11 +299,7 @@ public class TimePickerDialog extends DialogFragment implements RadialPickerLayo
         } else {
             mTimePicker.tryVibrate();
         }
-        if (mCallback != null) {
-            mCallback.onTimeSet(mTimePicker,
-                    mTimePicker.getHours(), mTimePicker.getMinutes());
-        }
-        dismiss();
+        returnResult();
     }
 
     private void updateAmPmDisplay(int amOrPm) {
@@ -476,11 +450,7 @@ public class TimePickerDialog extends DialogFragment implements RadialPickerLayo
                 }
                 finishKbMode(false);
             }
-            if (mCallback != null) {
-                mCallback.onTimeSet(mTimePicker,
-                        mTimePicker.getHours(), mTimePicker.getMinutes());
-            }
-            dismiss();
+            returnResult();
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
             if (mInKbMode) {
