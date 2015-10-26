@@ -1,16 +1,17 @@
 package com.fourmob.datetimepicker.date;
 
-import android.graphics.Paint.Align;
-import android.graphics.Paint.Style;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
+import android.graphics.Paint.Style;
 import android.graphics.Typeface;
 import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.view.MotionEvent;
 import android.view.View;
+
 import com.fourmob.datetimepicker.R;
 import com.fourmob.datetimepicker.Utils;
 
@@ -78,6 +79,9 @@ public class SimpleMonthView extends View {
     protected int mRowHeight = DEFAULT_HEIGHT;
     protected int mWidth;
     protected int mYear;
+    protected int mDayDisabledTextColor;
+    protected int mStartDay;
+    protected int mEndDay;
 
 	private final Calendar mCalendar;
 	private final Calendar mDayLabelCalendar;
@@ -92,11 +96,12 @@ public class SimpleMonthView extends View {
 		super(context);
 		Resources resources = context.getResources();
 		mDayLabelCalendar = Calendar.getInstance();
-		mCalendar = Calendar.getInstance();
+        mCalendar = Calendar.getInstance();
 
 		mDayOfWeekTypeface = resources.getString(R.string.day_of_week_label_typeface);
 		mMonthTitleTypeface = resources.getString(R.string.sans_serif);
 		mDayTextColor = resources.getColor(R.color.date_picker_text_normal);
+        this.mDayDisabledTextColor = resources.getColor(R.color.date_picker_text_disabled);
 		mTodayNumberColor = resources.getColor(R.color.blue);
 		mMonthTitleColor = resources.getColor(R.color.white);
 		mMonthTitleBGColor = resources.getColor(R.color.circle_background);
@@ -173,10 +178,13 @@ public class SimpleMonthView extends View {
 			if (mSelectedDay == day) {
 				canvas.drawCircle(x, y - MINI_DAY_NUMBER_TEXT_SIZE / 3, DAY_SELECTED_CIRCLE_SIZE, mSelectedCirclePaint);
             }
+
             if (mHasToday && (mToday == day)) {
-				mMonthNumPaint.setColor(mTodayNumberColor);
+                mMonthNumPaint.setColor(mTodayNumberColor);
+            } else if (day < this.mStartDay || day > this.mEndDay) {
+                this.mMonthNumPaint.setColor(this.mDayDisabledTextColor);
             } else {
-				mMonthNumPaint.setColor(mDayTextColor);
+                mMonthNumPaint.setColor(mDayTextColor);
             }
 
 			canvas.drawText(String.format("%d", day), x, y, mMonthNumPaint);
@@ -198,6 +206,11 @@ public class SimpleMonthView extends View {
 
 		int yDay = (int) (y - MONTH_HEADER_SIZE) / mRowHeight;
 		int day = 1 + ((int) ((x - padding) * mNumDays / (mWidth - padding - mPadding)) - findDayOffset()) + yDay * mNumDays;
+
+        // If day out of range
+        if (day < this.mStartDay || day > this.mEndDay) {
+            return null;
+        }
 
 		return new SimpleMonthAdapter.CalendarDay(mYear, mMonth, day);
 	}
@@ -291,6 +304,8 @@ public class SimpleMonthView extends View {
 
         mMonth = params.get(VIEW_PARAMS_MONTH);
         mYear = params.get(VIEW_PARAMS_YEAR);
+        mStartDay = params.get(DatePickerDialog.KEY_DAY_START);
+        mEndDay = params.get(DatePickerDialog.KEY_DAY_END);
 
         final Time today = new Time(Time.getCurrentTimezone());
         today.setToNow();

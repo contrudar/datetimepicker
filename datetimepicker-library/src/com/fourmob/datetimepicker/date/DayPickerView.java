@@ -76,6 +76,7 @@ public class DayPickerView extends ListView implements AbsListView.OnScrollListe
         // Set the selected day
         if (setSelected) {
             mSelectedDay.set(day);
+            mAdapter.setSelectedDay(mSelectedDay);
         }
 
         mTempDay.set(day);

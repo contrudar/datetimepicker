@@ -32,7 +32,8 @@ public class SimpleMonthAdapter extends BaseAdapter implements SimpleMonthView.O
 	}
 
 	public int getCount() {
-        return ((mController.getMaxYear() - mController.getMinYear()) + 1) * MONTHS_IN_YEAR;
+        return ((mController.getMaxYear() - mController.getMinYear())
+                + mController.getEndMonth() - mController.getStartMonth() + 1) * MONTHS_IN_YEAR;
 	}
 
 	public Object getItem(int position) {
@@ -60,13 +61,20 @@ public class SimpleMonthAdapter extends BaseAdapter implements SimpleMonthView.O
         }
         drawingParams.clear();
 
-        final int month = position % MONTHS_IN_YEAR;
-        final int year = position / MONTHS_IN_YEAR + mController.getMinYear();
+        final int month = (position + mController.getStartMonth()) % MONTHS_IN_YEAR;
+        final int year = (position + mController.getStartMonth()) / MONTHS_IN_YEAR + mController.getMinYear();
 
         int selectedDay = -1;
         if (isSelectedDayInMonth(year, month)) {
             selectedDay = mSelectedDay.day;
         }
+
+		int startDay = -1;
+		int endDay = 31;
+		if (this.mController.getStartMonth() == month && this.mController.getMinYear() == year)
+			startDay = this.mController.getStartDay();
+		if (this.mController.getEndMonth() == month && this.mController.getMaxYear() == year)
+			endDay = this.mController.getEndDay();
 
 		v.reuse();
 
@@ -74,6 +82,8 @@ public class SimpleMonthAdapter extends BaseAdapter implements SimpleMonthView.O
         drawingParams.put(SimpleMonthView.VIEW_PARAMS_YEAR, year);
         drawingParams.put(SimpleMonthView.VIEW_PARAMS_MONTH, month);
         drawingParams.put(SimpleMonthView.VIEW_PARAMS_WEEK_START, mController.getFirstDayOfWeek());
+		drawingParams.put(DatePickerDialog.KEY_DAY_START, startDay);
+		drawingParams.put(DatePickerDialog.KEY_DAY_END, endDay);
 		v.setMonthParams(drawingParams);
 		v.invalidate();
 
