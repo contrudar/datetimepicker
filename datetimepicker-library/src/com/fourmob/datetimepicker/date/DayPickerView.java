@@ -81,7 +81,7 @@ public class DayPickerView extends ListView implements AbsListView.OnScrollListe
 
         mTempDay.set(day);
         final int position = (day.year - mController.getMinYear())
-                * SimpleMonthAdapter.MONTHS_IN_YEAR + day.month;
+                * SimpleMonthAdapter.MONTHS_IN_YEAR - mController.getStartMonth() + day.month;
 
         View child;
         int i = 0;

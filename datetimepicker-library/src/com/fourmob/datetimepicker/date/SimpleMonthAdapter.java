@@ -71,17 +71,23 @@ public class SimpleMonthAdapter extends BaseAdapter implements SimpleMonthView.O
 
 		int startDay = -1;
 		int endDay = 31;
-		if (this.mController.getStartMonth() == month && this.mController.getMinYear() == year)
-			startDay = this.mController.getStartDay();
-		if (this.mController.getEndMonth() == month && this.mController.getMaxYear() == year)
-			endDay = this.mController.getEndDay();
+		if (mController.getStartMonth() == month && mController.getMinYear() == year) {
+			startDay = mController.getStartDay();
+		}
+		if (mController.getEndMonth() == month && mController.getMaxYear() == year) {
+			endDay = mController.getEndDay();
+		}
 
 		v.reuse();
 
-        drawingParams.put(SimpleMonthView.VIEW_PARAMS_SELECTED_DAY, selectedDay);
-        drawingParams.put(SimpleMonthView.VIEW_PARAMS_YEAR, year);
-        drawingParams.put(SimpleMonthView.VIEW_PARAMS_MONTH, month);
-        drawingParams.put(SimpleMonthView.VIEW_PARAMS_WEEK_START, mController.getFirstDayOfWeek());
+		drawingParams.put(SimpleMonthView.VIEW_PARAMS_SELECTED_DAY, selectedDay);
+		drawingParams.put(SimpleMonthView.VIEW_PARAMS_YEAR, year);
+		drawingParams.put(SimpleMonthView.VIEW_PARAMS_MONTH, month);
+		drawingParams.put(SimpleMonthView.VIEW_PARAMS_WEEK_START, mController.getFirstDayOfWeek());
+		drawingParams.put(DatePickerDialog.KEY_YEAR_START, mController.getMinYear());
+		drawingParams.put(DatePickerDialog.KEY_YEAR_END, mController.getMaxYear());
+		drawingParams.put(DatePickerDialog.KEY_MONTH_START, mController.getStartMonth());
+		drawingParams.put(DatePickerDialog.KEY_MONTH_END, mController.getEndMonth());
 		drawingParams.put(DatePickerDialog.KEY_DAY_START, startDay);
 		drawingParams.put(DatePickerDialog.KEY_DAY_END, endDay);
 		v.setMonthParams(drawingParams);

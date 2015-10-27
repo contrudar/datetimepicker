@@ -80,6 +80,10 @@ public class SimpleMonthView extends View {
     protected int mWidth;
     protected int mYear;
     protected int mDayDisabledTextColor;
+    protected int mMinYear;
+    protected int mMaxYear;
+    protected int mStartMonth;
+    protected int mEndMonth;
     protected int mStartDay;
     protected int mEndDay;
 
@@ -101,7 +105,7 @@ public class SimpleMonthView extends View {
 		mDayOfWeekTypeface = resources.getString(R.string.day_of_week_label_typeface);
 		mMonthTitleTypeface = resources.getString(R.string.sans_serif);
 		mDayTextColor = resources.getColor(R.color.date_picker_text_normal);
-        this.mDayDisabledTextColor = resources.getColor(R.color.date_picker_text_disabled);
+        mDayDisabledTextColor = resources.getColor(R.color.date_picker_text_disabled);
 		mTodayNumberColor = resources.getColor(R.color.blue);
 		mMonthTitleColor = resources.getColor(R.color.white);
 		mMonthTitleBGColor = resources.getColor(R.color.circle_background);
@@ -179,12 +183,18 @@ public class SimpleMonthView extends View {
 				canvas.drawCircle(x, y - MINI_DAY_NUMBER_TEXT_SIZE / 3, DAY_SELECTED_CIRCLE_SIZE, mSelectedCirclePaint);
             }
 
-            if (mHasToday && (mToday == day)) {
-                mMonthNumPaint.setColor(mTodayNumberColor);
-            } else if (day < this.mStartDay || day > this.mEndDay) {
-                this.mMonthNumPaint.setColor(this.mDayDisabledTextColor);
+            if (mYear <= mMaxYear && mYear >= mMinYear && mMonth <= mEndMonth && mMonth >= mStartMonth) {
+                if (mHasToday && (mToday == day)) {
+                    mMonthNumPaint.setColor(mTodayNumberColor);
+                } else {
+                    if (day < mStartDay || day > mEndDay) {
+                        mMonthNumPaint.setColor(mDayDisabledTextColor);
+                    } else{
+                        mMonthNumPaint.setColor(mDayTextColor);
+                    }
+                }
             } else {
-                mMonthNumPaint.setColor(mDayTextColor);
+                mMonthNumPaint.setColor(mDayDisabledTextColor);
             }
 
 			canvas.drawText(String.format("%d", day), x, y, mMonthNumPaint);
@@ -208,7 +218,11 @@ public class SimpleMonthView extends View {
 		int day = 1 + ((int) ((x - padding) * mNumDays / (mWidth - padding - mPadding)) - findDayOffset()) + yDay * mNumDays;
 
         // If day out of range
-        if (day < this.mStartDay || day > this.mEndDay) {
+        if (mYear <= mMaxYear && mYear >= mMinYear && mMonth <= mEndMonth && mMonth >= mStartMonth) {
+            if (day < mStartDay || day > mEndDay) {
+                return null;
+            }
+        } else {
             return null;
         }
 
@@ -304,6 +318,10 @@ public class SimpleMonthView extends View {
 
         mMonth = params.get(VIEW_PARAMS_MONTH);
         mYear = params.get(VIEW_PARAMS_YEAR);
+        mMinYear = params.get(DatePickerDialog.KEY_YEAR_START);
+        mMaxYear = params.get(DatePickerDialog.KEY_YEAR_END);
+        mStartMonth = params.get(DatePickerDialog.KEY_MONTH_START);
+        mEndMonth = params.get(DatePickerDialog.KEY_MONTH_END);
         mStartDay = params.get(DatePickerDialog.KEY_DAY_START);
         mEndDay = params.get(DatePickerDialog.KEY_DAY_END);
 

@@ -97,20 +97,34 @@ public class DatePickerDialog extends AbstractDialogFragment<Calendar> implement
     private boolean mVibrate = true;
     private boolean mCloseOnSingleTapDay;
 
-	public static Bundle createArguments(final int year, final int month, final int day, final boolean vibrate) {
-		if (year > MAX_YEAR) {
-			throw new IllegalArgumentException("year end must < " + MAX_YEAR);
-		}
-		if (year < MIN_YEAR) {
-			throw new IllegalArgumentException("year end must > " + MIN_YEAR);
-		}
-		Bundle bundle = new Bundle();
-		bundle.putInt(KEY_SELECTED_YEAR, year);
-		bundle.putInt(KEY_SELECTED_MONTH, month);
-		bundle.putInt(KEY_SELECTED_DAY, day);
-		bundle.putBoolean(KEY_VIBRATE, vibrate);
-		return bundle;
-	}
+    public static Bundle createArguments(final Calendar calendarWithSelectedDate, final Calendar calendarStartDate, final Calendar calendarEndDate, final boolean vibrate) {
+        final int year = calendarWithSelectedDate.get(Calendar.YEAR);
+        final int month = calendarWithSelectedDate.get(Calendar.MONTH);
+        final int day = calendarWithSelectedDate.get(Calendar.DAY_OF_MONTH);
+
+        if (year > MAX_YEAR) {
+            throw new IllegalArgumentException("year end must < " + MAX_YEAR);
+        }
+        if (year < MIN_YEAR) {
+            throw new IllegalArgumentException("year end must > " + MIN_YEAR);
+        }
+        Bundle bundle = new Bundle();
+        bundle.putInt(KEY_SELECTED_YEAR, year);
+        bundle.putInt(KEY_SELECTED_MONTH, month);
+        bundle.putInt(KEY_SELECTED_DAY, day);
+        if (calendarStartDate != null) {
+            bundle.putInt(KEY_YEAR_START, calendarStartDate.get(Calendar.YEAR));
+            bundle.putInt(KEY_MONTH_START, calendarStartDate.get(Calendar.MONTH));
+            bundle.putInt(KEY_DAY_START, calendarStartDate.get(Calendar.DAY_OF_MONTH));
+        }
+        if (calendarEndDate != null) {
+            bundle.putInt(KEY_YEAR_END, calendarEndDate.get(Calendar.YEAR));
+            bundle.putInt(KEY_MONTH_END, calendarEndDate.get(Calendar.MONTH));
+            bundle.putInt(KEY_DAY_END, calendarEndDate.get(Calendar.DAY_OF_MONTH));
+        }
+        bundle.putBoolean(KEY_VIBRATE, vibrate);
+        return bundle;
+    }
 
     private void adjustDayInMonthIfNeeded(int month, int year) {
         int day = mCalendar.get(Calendar.DAY_OF_MONTH);
@@ -122,23 +136,23 @@ public class DatePickerDialog extends AbstractDialogFragment<Calendar> implement
 
 	private void adjustDayAndMonthIfNeeded(int month, int year) {
 
-		if (year == this.mMinYear) {
+		if (year == mMinYear) {
 			if (month < mStartMonth) {
-				this.mCalendar.set(Calendar.MONTH, this.mStartMonth);
-				this.mCalendar.set(Calendar.DAY_OF_MONTH, this.mStartDay);
+				mCalendar.set(Calendar.MONTH, mStartMonth);
+				mCalendar.set(Calendar.DAY_OF_MONTH, mStartDay);
 			}
-			if (month == mStartMonth && this.mCalendar.get(Calendar.DAY_OF_MONTH) < this.mStartDay) {
-				this.mCalendar.set(Calendar.DAY_OF_MONTH, this.mStartDay);
+			if (month == mStartMonth && mCalendar.get(Calendar.DAY_OF_MONTH) < mStartDay) {
+				mCalendar.set(Calendar.DAY_OF_MONTH, mStartDay);
 			}
 		}
 
-		if (year == this.mMaxYear) {
+		if (year == mMaxYear) {
 			if (month > mEndMonth) {
-				this.mCalendar.set(Calendar.MONTH, this.mEndMonth);
-				this.mCalendar.set(Calendar.DAY_OF_MONTH, this.mEndDay);
+				mCalendar.set(Calendar.MONTH, mEndMonth);
+				mCalendar.set(Calendar.DAY_OF_MONTH, mEndDay);
 			}
-			if (month == mEndMonth && this.mCalendar.get(Calendar.DAY_OF_MONTH) > this.mEndDay) {
-				this.mCalendar.set(Calendar.DAY_OF_MONTH, this.mEndDay);
+			if (month == mEndMonth && mCalendar.get(Calendar.DAY_OF_MONTH) > mEndDay) {
+				mCalendar.set(Calendar.DAY_OF_MONTH, mEndDay);
 			}
 		}
 		adjustDayInMonthIfNeeded(month, year);
@@ -271,11 +285,30 @@ public class DatePickerDialog extends AbstractDialogFragment<Calendar> implement
 		}
 	}
 
-	private void initializeFromBundle(Bundle bundle) {
+	private void initializeFromBundle(final Bundle bundle) {
 		final Calendar calendar = Calendar.getInstance();
 		mCalendar.set(Calendar.YEAR, bundle.getInt(KEY_SELECTED_YEAR, calendar.get(Calendar.YEAR)));
 		mCalendar.set(Calendar.MONTH, bundle.getInt(KEY_SELECTED_MONTH, calendar.get(Calendar.MONTH)));
 		mCalendar.set(Calendar.DAY_OF_MONTH, bundle.getInt(KEY_SELECTED_DAY, calendar.get(Calendar.DAY_OF_MONTH)));
+		if (bundle.containsKey(KEY_YEAR_START)) {
+			mMinYear = bundle.getInt(KEY_YEAR_START);
+		}
+		if (bundle.containsKey(KEY_MONTH_START)) {
+			mStartMonth = bundle.getInt(KEY_MONTH_START);
+		}
+		if (bundle.containsKey(KEY_DAY_START)) {
+			mStartDay = bundle.getInt(KEY_DAY_START);
+		}
+		if (bundle.containsKey(KEY_YEAR_END)) {
+			mMaxYear = bundle.getInt(KEY_YEAR_END);
+		}
+		if (bundle.containsKey(KEY_MONTH_END)) {
+			mEndMonth = bundle.getInt(KEY_MONTH_END);
+		}
+		if (bundle.containsKey(KEY_DAY_END)) {
+			mEndDay = bundle.getInt(KEY_DAY_END);
+		}
+
 		mVibrate = bundle.getBoolean(KEY_VIBRATE, true);
 	}
 
@@ -352,7 +385,7 @@ public class DatePickerDialog extends AbstractDialogFragment<Calendar> implement
 		return view;
 	}
 
-    private void onDoneButtonClick() {
+	private void onDoneButtonClick() {
         tryVibrate();
 		returnResult(mCalendar);
     }
@@ -379,8 +412,8 @@ public class DatePickerDialog extends AbstractDialogFragment<Calendar> implement
 		bundle.putInt(KEY_YEAR_END, mMaxYear);
         bundle.putInt(KEY_MONTH_START, mStartMonth);
         bundle.putInt(KEY_MONTH_END, mEndMonth);
-        bundle.putInt(KEY_DAY_START, mStartMonth);
-        bundle.putInt(KEY_DAY_END, mEndMonth);
+        bundle.putInt(KEY_DAY_START, mStartDay);
+        bundle.putInt(KEY_DAY_END, mEndDay);
 
 		bundle.putInt(KEY_CURRENT_VIEW, mCurrentView);
 
@@ -403,68 +436,24 @@ public class DatePickerDialog extends AbstractDialogFragment<Calendar> implement
 		updateDisplay(true);
 	}
 
-    /**
-     * Sets the start date for the DatePickerDialog.
-     *
-     * @param startYear  The minimum year.
-     * @param startMonth The first valid month of the startYear. This must be a valid Calendar.Month. (0-11). Default is 0.
-     * @param startDay   The first valid day of startMont (inclusive). Default is 1.
-     */
-    public void setStartDate(int startYear, int startMonth, int startDay) {
-        setDateRange(startYear, startMonth, startDay, mMaxYear, mEndMonth, mEndDay);
-    }
-
-    /**
-     * Sets the end date for the DatePickerDialog.
-     *
-     * @param endYear  The maximum year.
-     * @param endMonth The last valid month of the endYear. This must be a valid Calendar.Month. (0-11). Default is 11.
-     * @param endDay   THe last valid day of endMonth (inclusive). Default is 31.
-     */
-    public void setEndDate(int endYear, int endMonth, int endDay) {
-        setDateRange(mMinYear, mStartMonth, mStartDay, endYear, endMonth, endDay);
-    }
-
-    /**
-     * Sets the time period for the DatePickerDialog.
-     *
-     * @param startYear  The minimum year.
-     * @param startMonth The first valid month of the startYear. This must be a valid Calendar.Month. (0-11). Default is 0.
-     * @param startDay   The first valid day of startMont (inclusive). Default is 1.
-     * @param endYear    The maximum year.
-     * @param endMonth   The last valid month of the endYear. This must be a valid Calendar.Month. (0-11). Default is 11.
-     * @param endDay     THe last valid day of endMonth (inclusive). Default is 31.
-     */
-    public void setDateRange(int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay) {
-        setYearRange(startYear, endYear);
-        if (startMonth >= 12 || startMonth < 0)
-            throw new IllegalArgumentException("startMonth must be between 0-11");
-        if (endMonth >= 12 || endMonth < 0)
-            throw new IllegalArgumentException("endMonth must be between 0-11");
-        this.mStartMonth = startMonth;
-        this.mStartDay = startDay;
-        this.mEndMonth = endMonth;
-        this.mEndDay = endDay;
-    }
-
     @Override
     public int getStartMonth() {
-        return this.mStartMonth;
+        return mStartMonth;
     }
 
     @Override
     public int getEndMonth() {
-        return this.mEndMonth;
+        return mEndMonth;
     }
 
     @Override
     public int getStartDay() {
-        return this.mStartDay;
+        return mStartDay;
     }
 
     @Override
     public int getEndDay() {
-        return this.mEndDay;
+        return mEndDay;
     }
 
 	public void registerOnDateChangedListener(OnDateChangedListener onDateChangedListener) {
