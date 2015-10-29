@@ -187,9 +187,9 @@ public class SimpleMonthView extends View {
                 if (mHasToday && (mToday == day)) {
                     mMonthNumPaint.setColor(mTodayNumberColor);
                 } else {
-                    if (day < mStartDay || day > mEndDay) {
+                    if ((day < mStartDay || day > mEndDay) && (mYear == mMaxYear && mMonth == mEndMonth)) {
                         mMonthNumPaint.setColor(mDayDisabledTextColor);
-                    } else{
+                    } else {
                         mMonthNumPaint.setColor(mDayTextColor);
                     }
                 }
@@ -219,7 +219,7 @@ public class SimpleMonthView extends View {
 
         // If day out of range
         if (mYear <= mMaxYear && mYear >= mMinYear && mMonth <= mEndMonth && mMonth >= mStartMonth) {
-            if (day < mStartDay || day > mEndDay) {
+            if ((day < mStartDay || day > mEndDay) && (mYear == mMaxYear && mMonth == mEndMonth)) {
                 return null;
             }
         } else {
