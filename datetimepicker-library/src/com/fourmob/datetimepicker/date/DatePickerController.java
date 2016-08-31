@@ -1,6 +1,6 @@
 package com.fourmob.datetimepicker.date;
 
-interface DatePickerController {
+public interface DatePickerController {
     int getFirstDayOfWeek();
 
     int getMaxYear();
@@ -21,7 +21,7 @@ interface DatePickerController {
 
     void onYearSelected(int year);
 
-    void registerOnDateChangedListener(DatePickerDialog.OnDateChangedListener onDateChangedListener);
+    void registerOnDateChangedListener(OnDateChangedListener onDateChangedListener);
 
     void tryVibrate();
 }

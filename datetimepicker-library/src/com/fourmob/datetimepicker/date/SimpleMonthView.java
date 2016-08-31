@@ -333,12 +333,12 @@ public class SimpleMonthView extends View {
 
         mMonth = params.get(VIEW_PARAMS_MONTH);
         mYear = params.get(VIEW_PARAMS_YEAR);
-        mMinYear = params.get(DatePickerDialog.KEY_YEAR_START);
-        mMaxYear = params.get(DatePickerDialog.KEY_YEAR_END);
-        mStartMonth = params.get(DatePickerDialog.KEY_MONTH_START);
-        mEndMonth = params.get(DatePickerDialog.KEY_MONTH_END);
-        mStartDay = params.get(DatePickerDialog.KEY_DAY_START);
-        mEndDay = params.get(DatePickerDialog.KEY_DAY_END);
+        mMinYear = params.get(Constants.KEY_YEAR_START);
+        mMaxYear = params.get(Constants.KEY_YEAR_END);
+        mStartMonth = params.get(Constants.KEY_MONTH_START);
+        mEndMonth = params.get(Constants.KEY_MONTH_END);
+        mStartDay = params.get(Constants.KEY_DAY_START);
+        mEndDay = params.get(Constants.KEY_DAY_END);
 
         final Time today = new Time(Time.getCurrentTimezone());
         today.setToNow();
