@@ -15,7 +15,7 @@ import com.fourmob.datetimepicker.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class YearPickerView extends ListView implements AdapterView.OnItemClickListener, DatePickerDialog.OnDateChangedListener {
+public class YearPickerView extends ListView implements AdapterView.OnItemClickListener, OnDateChangedListener {
 	
     private YearAdapter mAdapter;
 	private int mChildSize;

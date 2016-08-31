@@ -84,12 +84,12 @@ public class SimpleMonthAdapter extends BaseAdapter implements SimpleMonthView.O
 		drawingParams.put(SimpleMonthView.VIEW_PARAMS_YEAR, year);
 		drawingParams.put(SimpleMonthView.VIEW_PARAMS_MONTH, month);
 		drawingParams.put(SimpleMonthView.VIEW_PARAMS_WEEK_START, mController.getFirstDayOfWeek());
-		drawingParams.put(DatePickerDialog.KEY_YEAR_START, mController.getMinYear());
-		drawingParams.put(DatePickerDialog.KEY_YEAR_END, mController.getMaxYear());
-		drawingParams.put(DatePickerDialog.KEY_MONTH_START, mController.getStartMonth());
-		drawingParams.put(DatePickerDialog.KEY_MONTH_END, mController.getEndMonth());
-		drawingParams.put(DatePickerDialog.KEY_DAY_START, startDay);
-		drawingParams.put(DatePickerDialog.KEY_DAY_END, endDay);
+		drawingParams.put(Constants.KEY_YEAR_START, mController.getMinYear());
+		drawingParams.put(Constants.KEY_YEAR_END, mController.getMaxYear());
+		drawingParams.put(Constants.KEY_MONTH_START, mController.getStartMonth());
+		drawingParams.put(Constants.KEY_MONTH_END, mController.getEndMonth());
+		drawingParams.put(Constants.KEY_DAY_START, startDay);
+		drawingParams.put(Constants.KEY_DAY_END, endDay);
 		v.setMonthParams(drawingParams);
 		v.invalidate();
 

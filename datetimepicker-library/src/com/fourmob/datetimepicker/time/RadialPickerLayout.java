@@ -41,6 +41,7 @@ import android.widget.FrameLayout;
 
 import com.fourmob.datetimepicker.R;
 import com.fourmob.datetimepicker.Utils;
+import com.fourmob.datetimepicker.date.Constants;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 
@@ -53,12 +54,12 @@ public class RadialPickerLayout extends FrameLayout implements OnTouchListener {
     private static final int VISIBLE_DEGREES_STEP_SIZE = 30;
     private static final int HOUR_VALUE_TO_DEGREES_STEP_SIZE = VISIBLE_DEGREES_STEP_SIZE;
     private static final int MINUTE_VALUE_TO_DEGREES_STEP_SIZE = 6;
-    private static final int HOUR_INDEX = TimePickerDialog.HOUR_INDEX;
-    private static final int MINUTE_INDEX = TimePickerDialog.MINUTE_INDEX;
-    private static final int AMPM_INDEX = TimePickerDialog.AMPM_INDEX;
-    private static final int ENABLE_PICKER_INDEX = TimePickerDialog.ENABLE_PICKER_INDEX;
-    private static final int AM = TimePickerDialog.AM;
-    private static final int PM = TimePickerDialog.PM;
+    private static final int HOUR_INDEX = Constants.HOUR_INDEX;
+    private static final int MINUTE_INDEX = Constants.MINUTE_INDEX;
+    private static final int AMPM_INDEX = Constants.AMPM_INDEX;
+    private static final int ENABLE_PICKER_INDEX = Constants.ENABLE_PICKER_INDEX;
+    private static final int AM = Constants.AM;
+    private static final int PM = Constants.PM;
 
     private Vibrator mVibrator;
     private boolean mVibrate = true;

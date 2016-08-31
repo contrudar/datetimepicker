@@ -9,7 +9,7 @@ import android.view.ViewConfiguration;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
-public class DayPickerView extends ListView implements AbsListView.OnScrollListener, DatePickerDialog.OnDateChangedListener {
+public class DayPickerView extends ListView implements AbsListView.OnScrollListener, OnDateChangedListener {
 
     protected static final int GOTO_SCROLL_DURATION = 250;
     protected static final int SCROLL_CHANGE_DELAY = 40;

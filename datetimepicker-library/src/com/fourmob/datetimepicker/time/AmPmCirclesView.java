@@ -15,6 +15,7 @@ package com.fourmob.datetimepicker.time;
  * limitations under the License.
  */
 
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -25,6 +26,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.fourmob.datetimepicker.R;
+import com.fourmob.datetimepicker.date.Constants;
 
 import java.text.DateFormatSymbols;
 
@@ -49,8 +51,8 @@ public class AmPmCirclesView extends View {
     private String mPmText;
     private boolean mIsInitialized;
 
-    private static final int AM = TimePickerDialog.AM;
-    private static final int PM = TimePickerDialog.PM;
+    private static final int AM = Constants.AM;
+    private static final int PM = Constants.PM;
 
     private boolean mDrawValuesReady;
     private int mAmPmCircleRadius;
